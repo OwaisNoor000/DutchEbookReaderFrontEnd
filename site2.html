@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceBook - Learn Languages with Fun!</title>
+    <style>
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --accent: #FFD166;
+            --background: #F7FFF7;
+            --dark: #1A535C;
+            --border-radius: 20px;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: var(--primary);
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 0px var(--accent);
+        }
+        
+        .tagline {
+            color: var(--dark);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 90%;
+            max-width: 900px;
+        }
+        
+        .book-container {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .book-page {
+            width: 90%;
+            max-width: 600px;
+            aspect-ratio: 4/3;
+            background-color: #FFF;
+            border-radius: var(--border-radius);
+            border: 8px solid var(--primary);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .book-page img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .placeholder-text {
+            text-align: center;
+            padding: 20px;
+            color: var(--dark);
+            font-size: 1.8rem;
+            line-height: 1.5;
+        }
+        
+        .controls-section {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .controls-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-controls, .speed-controls, .volume-controls {
+            display: flex;
+            align-items: center;
+            background-color: var(--secondary);
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .speed-controls, .volume-controls {
+            background-color: var(--accent);
+        }
+        
+        .control-btn {
+            background-color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 8px;
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .control-btn:hover {
+            transform: scale(1.1);
+            background-color: var(--background);
+        }
+        
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .play-btn {
+            width: 70px;
+            height: 70px;
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .control-label {
+            font-weight: bold;
+            margin-right: 10px;
+            color: var(--dark);
+            font-size: 1.2rem;
+        }
+        
+        .speed-value, .volume-value {
+            background-color: white;
+            border-radius: 10px;
+            padding: 5px 10px;
+            margin: 0 10px;
+            min-width: 50px;
+            text-align: center;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .language-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .language-btn {
+            background-color: white;
+            border: 3px solid var(--secondary);
+            border-radius: 15px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .language-btn:hover, .language-btn.active {
+            background-color: var(--secondary);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .help-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--accent);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            font-weight: bold;
+            color: var(--dark);
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+        
+        .help-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .mode-switch {
+            display: flex;
+            margin-top: 20px;
+            background-color: var(--primary);
+            border-radius: 15px;
+            padding: 5px;
+        }
+        
+        .mode-btn {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .mode-btn.active {
+            background-color: white;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: var(--dark);
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .tagline {
+                font-size: 1.2rem;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .control-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .play-btn {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>VoiceBook</h1>
+        <p class="tagline">Learn languages while having fun!</p>
+    </header>
+    
+    <div class="container">
+        <div class="book-container">
+            <div class="book-page">
+                <img src="/api/placeholder/600/450" alt="Ebook page">
+            </div>
+            <div class="help-icon">?</div>
+        </div>
+        
+        <div class="controls-section">
+            <div class="controls-container">
+                <div class="nav-controls">
+                    <button class="control-btn" id="prev-btn">←</button>
+                    <button class="control-btn play-btn" id="play-btn">▶</button>
+                    <button class="control-btn" id="next-btn">→</button>
+                </div>
+                
+                <div class="speed-controls">
+                    <span class="control-label">Speed:</span>
+                    <button class="control-btn" id="speed-down">-</button>
+                    <span class="speed-value">1.0x</span>
+                    <button class="control-btn" id="speed-up">+</button>
+                </div>
+                
+                <div class="volume-controls">
+                    <span class="control-label">Volume:</span>
+                    <button class="control-btn" id="volume-down">-</button>
+                    <span class="volume-value">5</span>
+                    <button class="control-btn" id="volume-up">+</button>
+                </div>
+            </div>
+            
+            <div class="mode-switch">
+                <button class="mode-btn active" id="read-mode">Read to Me</button>
+                <button class="mode-btn" id="practice-mode">Let Me Practice</button>
+            </div>
+            
+            <div class="language-selector">
+                <button class="language-btn active">English</button>
+                <button class="language-btn">Spanish</button>
+                <button class="language-btn">French</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 VoiceBook - Making language learning fun!</p>
+    </footer>
+    
+    <script>
+        // Audio playback state
+        let isPlaying = false;
+        let currentSpeed = 1.0;
+        let currentVolume = 5;
+        let currentPage = 1;
+        
+        // DOM Elements
+        const playBtn = document.getElementById('play-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const speedDownBtn = document.getElementById('speed-down');
+        const speedUpBtn = document.getElementById('speed-up');
+        const speedValue = document.querySelector('.speed-value');
+        const volumeDownBtn = document.getElementById('volume-down');
+        const volumeUpBtn = document.getElementById('volume-up');
+        const volumeValue = document.querySelector('.volume-value');
+        const readModeBtn = document.getElementById('read-mode');
+        const practiceModeBtn = document.getElementById('practice-mode');
+        const helpIcon = document.querySelector('.help-icon');
+        const languageBtns = document.querySelectorAll('.language-btn');
+        
+        // Toggle play/pause
+        playBtn.addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            
+            if (isPlaying) {
+                playBtn.innerHTML = '❚❚';
+                // Simulate audio playback
+                showNotification('Reading the page aloud!');
+            } else {
+                playBtn.innerHTML = '▶';
+                showNotification('Paused');
+            }
+        });
+        
+        // Previous page
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                showNotification(`Going to page ${currentPage}`);
+            } else {
+                showNotification('This is the first page!');
+            }
+        });
+        
+        // Next page
+        nextBtn.addEventListener('click', () => {
+            currentPage++;
+            showNotification(`Going to page ${currentPage}`);
+        });
+        
+        // Speed controls
+        speedDownBtn.addEventListener('click', () => {
+            if (currentSpeed > 0.5) {
+                currentSpeed -= 0.1;
+                currentSpeed = Math.round(currentSpeed * 10) / 10;
+                speedValue.textContent = currentSpeed.toFixed(1) + 'x';
+                showNotification(`Speed set to ${currentSpeed.toFixed(1)}x`);
+            }
+        });
+        
+        speedUpBtn.addEventListener('click', () => {
+            if (currentSpeed < 2.0) {
+                currentSpeed += 0.1;
+                currentSpeed = Math.round(currentSpeed * 10) / 10;
+                speedValue.textContent = currentSpeed.toFixed(1) + 'x';
+                showNotification(`Speed set to ${currentSpeed.toFixed(1)}x`);
+            }
+        });
+        
+        // Volume controls
+        volumeDownBtn.addEventListener('click', () => {
+            if (currentVolume > 0) {
+                currentVolume--;
+                volumeValue.textContent = currentVolume;
+                showNotification(`Volume set to ${currentVolume}`);
+            }
+        });
+        
+        volumeUpBtn.addEventListener('click', () => {
+            if (currentVolume < 10) {
+                currentVolume++;
+                volumeValue.textContent = currentVolume;
+                showNotification(`Volume set to ${currentVolume}`);
+            }
+        });
+        
+        // Mode switch
+        readModeBtn.addEventListener('click', () => {
+            readModeBtn.classList.add('active');
+            practiceModeBtn.classList.remove('active');
+            showNotification('Read to Me mode activated!');
+        });
+        
+        practiceModeBtn.addEventListener('click', () => {
+            practiceModeBtn.classList.add('active');
+            readModeBtn.classList.remove('active');
+            showNotification('Practice mode activated! Repeat after me!');
+        });
+        
+        // Help icon
+        helpIcon.addEventListener('click', () => {
+            alert('VoiceBook Help:\n\n• Press Play to hear the story\n• Use left/right arrows to change pages\n• Adjust speed and volume with + and -\n• Choose "Read to Me" to listen or "Let Me Practice" to practice speaking\n• Select your language below');
+        });
+        
+        // Language buttons
+        languageBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                languageBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                showNotification(`Switched to ${btn.textContent} mode!`);
+            });
+        });
+        
+        // Simple notification system
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.left = '50%';
+            notification.style.transform = 'translateX(-50%)';
+            notification.style.backgroundColor = 'var(--accent)';
+            notification.style.color = 'var(--dark)';
+            notification.style.padding = '10px 20px';
+            notification.style.borderRadius = '10px';
+            notification.style.fontWeight = 'bold';
+            notification.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+            notification.style.zIndex = '1000';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

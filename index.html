@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpeakStory - Children's eBook Library</title>
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="loadBooks.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+    
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: #fef6e4;
+      overflow-x: hidden;
+    }
+    
+    .bg-orange {
+      background-color: #f97316;
+    }
+    
+    .bg-red {
+      background-color: #ef4444;
+    }
+    
+    .bg-purple {
+      background-color: #9333ea;
+    }
+    
+    .text-orange {
+      color: #f97316;
+    }
+    
+    .text-red {
+      color: #ef4444;
+    }
+    
+    .text-purple {
+      color: #9333ea;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(90deg, #f97316, #ef4444, #9333ea);
+      background-size: 200% 200%;
+      animation: gradient 15s ease infinite;
+    }
+    
+    @keyframes gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+    
+    .floating {
+      animation: floating 3s ease-in-out infinite;
+    }
+    
+    @keyframes floating {
+      0% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+      100% {
+        transform: translateY(0px);
+      }
+    }
+    
+    .book-card {
+      transition: all 0.3s ease;
+    }
+    
+    .book-card:hover {
+      transform: translateY(-5px) scale(1.03);
+    }
+    
+    .upload-zone {
+      border: 3px dashed #9333ea;
+      transition: all 0.3s ease;
+    }
+    
+    .upload-zone:hover {
+      border-color: #f97316;
+      background-color: rgba(147, 51, 234, 0.05);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="gradient-bg text-white py-4 px-6 shadow-lg">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <svg class="w-10 h-10 floating" fill="white" viewBox="0 0 24 24">
+          <path d="M21,5c-1.11-0.35-2.33-0.5-3.5-0.5c-1.95,0-4.05,0.4-5.5,1.5c-1.45-1.1-3.55-1.5-5.5-1.5S2.45,4.9,1,6v14.65 c0,0.25,0.25,0.5,0.5,0.5c0.1,0,0.15-0.05,0.25-0.05C3.1,20.45,5.05,20,6.5,20c1.95,0,4.05,0.4,5.5,1.5c1.35-0.85,3.8-1.5,5.5-1.5 c1.65,0,3.35,0.3,4.75,1.05c0.1,0.05,0.15,0.05,0.25,0.05c0.25,0,0.5-0.25,0.5-0.5V6C22.4,5.55,21.75,5.25,21,5z M21,18.5 c-1.1-0.35-2.3-0.5-3.5-0.5c-1.7,0-4.15,0.65-5.5,1.5V8c1.35-0.85,3.8-1.5,5.5-1.5c1.2,0,2.4,0.15,3.5,0.5V18.5z"/>
+          <path d="M17.5,10.5c0.88,0,1.73,0.09,2.5,0.26V9.24C19.21,9.09,18.36,9,17.5,9c-1.7,0-3.24,0.29-4.5,0.83v1.66 C14.13,10.85,15.7,10.5,17.5,10.5z"/>
+          <path d="M13,12.49v1.66c1.13-0.64,2.7-0.99,4.5-0.99c0.88,0,1.73,0.09,2.5,0.26V11.9c-0.79-0.15-1.64-0.24-2.5-0.24 C15.8,11.66,14.26,11.96,13,12.49z"/>
+          <path d="M17.5,14.33c-1.7,0-3.24,0.29-4.5,0.83v1.66c1.13-0.64,2.7-0.99,4.5-0.99c0.88,0,1.73,0.09,2.5,0.26v-1.52 C19.21,14.41,18.36,14.33,17.5,14.33z"/>
+        </svg>
+        <h1 class="text-3xl font-bold">SpeakStory</h1>
+      </div>
+      <nav>
+        <ul class="flex space-x-6">
+          <li><a href="#" class="hover:underline font-semibold">Home</a></li>
+          <li><a href="#" class="hover:underline font-semibold">My Books</a></li>
+          <li><a href="#" class="hover:underline font-semibold">Help</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="py-10 px-6">
+    <div class="container mx-auto text-center max-w-4xl">
+      <h2 class="text-4xl md:text-5xl font-bold mb-6">Learn to Read with <span class="text-orange">Speak</span><span class="text-purple">Story</span>!</h2>
+      <p class="text-xl mb-8">Upload eBooks and let our app read them aloud to improve pronunciation and reading skills.</p>
+      
+      <!-- Upload Zone -->
+      <div id="uploadZone" class="upload-zone bg-white rounded-xl p-8 mb-12 cursor-pointer mx-auto max-w-lg">
+        <svg class="w-20 h-20 mx-auto mb-4 text-purple" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" />
+        </svg>
+        <h3 class="text-2xl font-bold mb-2">Upload New eBook</h3>
+        <p class="text-gray-600 mb-4">Drag and drop or click to select files</p>
+        <button class="bg-purple hover:bg-opacity-80 text-white font-bold py-3 px-6 rounded-full transition duration-300">
+          Select Files
+        </button>
+        <input type="file" class="hidden" id="fileInput" accept=".pdf,.epub" multiple />
+      </div>
+    </div>
+  </section>
+
+  <!-- Book Library Section -->
+  <section class="py-10 px-6 bg-gray-50">
+    <div class="container mx-auto">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold">Your Book Library</h2>
+        <div class="flex space-x-4">
+          <button class="bg-orange hover:bg-opacity-80 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+            Recent
+          </button>
+          <button class="bg-white border border-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg transition duration-300">
+            All Books
+          </button>
+        </div>
+      </div>
+      
+      <!-- Books Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6" id="libraryContainer">
+        <!-- Book 1 -->
+        <!-- <div class="book-card bg-white rounded-xl overflow-hidden shadow-lg">
+          <div class="relative pb-3/4">
+            <img src="PAGES/1.jpg" alt="Book cover" class="absolute h-full w-full object-cover" />
+            <div class="absolute top-0 right-0 bg-red rounded-bl-lg p-2">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 22.5C11.5833 22.5 11.1673 22.4167 10.752 22.25C10.3367 22.0833 9.98332 21.85 9.69165 21.55L3.44165 15.3C2.84165 14.7 2.54165 13.9583 2.54165 13.075C2.54165 12.1917 2.84165 11.45 3.44165 10.85C4.04165 10.25 4.78332 9.95 5.66665 9.95C6.54999 9.95 7.29165 10.25 7.89165 10.85L12 14.95L16.1083 10.85C16.7083 10.25 17.45 9.95 18.3333 9.95C19.2167 9.95 19.9583 10.25 20.5583 10.85C21.1583 11.45 21.4583 12.1917 21.4583 13.075C21.4583 13.9583 21.1583 14.7 20.5583 15.3L14.3083 21.55C14.0167 21.85 13.6627 22.0833 13.2462 22.25C12.8294 22.4167 12.4167 22.5 12 22.5Z" />
+              </svg>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg mb-1">The Magic Forest</h3>
+            <p class="text-gray-600 text-sm">Childrens Book</p>
+          </div>
+        </div> -->
+        
+        <!-- Book 2 -->
+        <!-- <div class="book-card bg-white rounded-xl overflow-hidden shadow-lg">
+          <div class="relative pb-3/4">
+            <img src="PAGES/1.jpg" alt="Book cover" class="absolute h-full w-full object-cover" />
+            <div class="absolute top-0 right-0 bg-purple rounded-bl-lg p-2">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 22.5C11.5833 22.5 11.1673 22.4167 10.752 22.25C10.3367 22.0833 9.98332 21.85 9.69165 21.55L3.44165 15.3C2.84165 14.7 2.54165 13.9583 2.54165 13.075C2.54165 12.1917 2.84165 11.45 3.44165 10.85C4.04165 10.25 4.78332 9.95 5.66665 9.95C6.54999 9.95 7.29165 10.25 7.89165 10.85L12 14.95L16.1083 10.85C16.7083 10.25 17.45 9.95 18.3333 9.95C19.2167 9.95 19.9583 10.25 20.5583 10.85C21.1583 11.45 21.4583 12.1917 21.4583 13.075C21.4583 13.9583 21.1583 14.7 20.5583 15.3L14.3083 21.55C14.0167 21.85 13.6627 22.0833 13.2462 22.25C12.8294 22.4167 12.4167 22.5 12 22.5Z" />
+              </svg>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg mb-1">Space Adventures</h3>
+            <p class="text-gray-600 text-sm">By Marcus Lee</p>
+          </div>
+        </div>
+         -->
+        <!-- Book 3 -->
+        <!-- <div class="book-card bg-white rounded-xl overflow-hidden shadow-lg">
+          <div class="relative pb-3/4">
+            <img src="/api/placeholder/400/320" alt="Book cover" class="absolute h-full w-full object-cover" />
+            <div class="absolute top-0 right-0 bg-orange rounded-bl-lg p-2">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 22.5C11.5833 22.5 11.1673 22.4167 10.752 22.25C10.3367 22.0833 9.98332 21.85 9.69165 21.55L3.44165 15.3C2.84165 14.7 2.54165 13.9583 2.54165 13.075C2.54165 12.1917 2.84165 11.45 3.44165 10.85C4.04165 10.25 4.78332 9.95 5.66665 9.95C6.54999 9.95 7.29165 10.25 7.89165 10.85L12 14.95L16.1083 10.85C16.7083 10.25 17.45 9.95 18.3333 9.95C19.2167 9.95 19.9583 10.25 20.5583 10.85C21.1583 11.45 21.4583 12.1917 21.4583 13.075C21.4583 13.9583 21.1583 14.7 20.5583 15.3L14.3083 21.55C14.0167 21.85 13.6627 22.0833 13.2462 22.25C12.8294 22.4167 12.4167 22.5 12 22.5Z" />
+              </svg>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg mb-1">Animal Friends</h3>
+            <p class="text-gray-600 text-sm">By Sarah Parker</p>
+          </div>
+        </div> -->
+        
+        <!-- Book 4 -->
+        <!-- <div class="book-card bg-white rounded-xl overflow-hidden shadow-lg">
+          <div class="relative pb-3/4">
+            <img src="/api/placeholder/400/320" alt="Book cover" class="absolute h-full w-full object-cover" />
+            <div class="absolute top-0 right-0 bg-red rounded-bl-lg p-2">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 22.5C11.5833 22.5 11.1673 22.4167 10.752 22.25C10.3367 22.0833 9.98332 21.85 9.69165 21.55L3.44165 15.3C2.84165 14.7 2.54165 13.9583 2.54165 13.075C2.54165 12.1917 2.84165 11.45 3.44165 10.85C4.04165 10.25 4.78332 9.95 5.66665 9.95C6.54999 9.95 7.29165 10.25 7.89165 10.85L12 14.95L16.1083 10.85C16.7083 10.25 17.45 9.95 18.3333 9.95C19.2167 9.95 19.9583 10.25 20.5583 10.85C21.1583 11.45 21.4583 12.1917 21.4583 13.075C21.4583 13.9583 21.1583 14.7 20.5583 15.3L14.3083 21.55C14.0167 21.85 13.6627 22.0833 13.2462 22.25C12.8294 22.4167 12.4167 22.5 12 22.5Z" />
+              </svg>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg mb-1">Dinosaur Tales</h3>
+            <p class="text-gray-600 text-sm">By Max Turner</p>
+          </div>
+        </div> -->
+        
+        <!-- Book 5 -->
+        <!-- <div class="book-card bg-white rounded-xl overflow-hidden shadow-lg">
+          <div class="relative pb-3/4">
+            <img src="/api/placeholder/400/320" alt="Book cover" class="absolute h-full w-full object-cover" />
+            <div class="absolute top-0 right-0 bg-purple rounded-bl-lg p-2">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 22.5C11.5833 22.5 11.1673 22.4167 10.752 22.25C10.3367 22.0833 9.98332 21.85 9.69165 21.55L3.44165 15.3C2.84165 14.7 2.54165 13.9583 2.54165 13.075C2.54165 12.1917 2.84165 11.45 3.44165 10.85C4.04165 10.25 4.78332 9.95 5.66665 9.95C6.54999 9.95 7.29165 10.25 7.89165 10.85L12 14.95L16.1083 10.85C16.7083 10.25 17.45 9.95 18.3333 9.95C19.2167 9.95 19.9583 10.25 20.5583 10.85C21.1583 11.45 21.4583 12.1917 21.4583 13.075C21.4583 13.9583 21.1583 14.7 20.5583 15.3L14.3083 21.55C14.0167 21.85 13.6627 22.0833 13.2462 22.25C12.8294 22.4167 12.4167 22.5 12 22.5Z" />
+              </svg>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg mb-1">Fairy Tales</h3>
+            <p class="text-gray-600 text-sm">By Hannah Wright</p>
+          </div>
+        </div> -->
+        
+        <!-- Book 6 -->
+        <!-- <div class="book-card bg-white rounded-xl overflow-hidden shadow-lg">
+          <div class="relative pb-3/4">
+            <img src="/api/placeholder/400/320" alt="Book cover" class="absolute h-full w-full object-cover" />
+            <div class="absolute top-0 right-0 bg-orange rounded-bl-lg p-2">
+              <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 22.5C11.5833 22.5 11.1673 22.4167 10.752 22.25C10.3367 22.0833 9.98332 21.85 9.69165 21.55L3.44165 15.3C2.84165 14.7 2.54165 13.9583 2.54165 13.075C2.54165 12.1917 2.84165 11.45 3.44165 10.85C4.04165 10.25 4.78332 9.95 5.66665 9.95C6.54999 9.95 7.29165 10.25 7.89165 10.85L12 14.95L16.1083 10.85C16.7083 10.25 17.45 9.95 18.3333 9.95C19.2167 9.95 19.9583 10.25 20.5583 10.85C21.1583 11.45 21.4583 12.1917 21.4583 13.075C21.4583 13.9583 21.1583 14.7 20.5583 15.3L14.3083 21.55C14.0167 21.85 13.6627 22.0833 13.2462 22.25C12.8294 22.4167 12.4167 22.5 12 22.5Z" />
+              </svg>
+            </div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-lg mb-1">Ocean Adventures</h3>
+            <p class="text-gray-600 text-sm">By Kevin Chen</p>
+          </div>
+        </div>
+      </div> -->
+      
+      <!-- Load More Button -->
+      <!-- <div class="text-center mt-10">
+        <button class="bg-white border-2 border-purple text-purple hover:bg-purple hover:text-white font-bold py-3 px-8 rounded-full transition duration-300">
+          Load More Books
+        </button>
+      </div>
+    </div> -->
+  </section>
+  
+  <!-- Floating Characters
+  <div class="fixed bottom-10 right-10 z-10">
+    <div class="floating cursor-pointer">
+      <svg class="w-20 h-20" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="32" r="30" fill="#f97316" />
+        <circle cx="20" cy="24" r="4" fill="white" />
+        <circle cx="44" cy="24" r="4" fill="white" />
+        <path d="M20 42C24 48 40 48 44 42" stroke="white" stroke-width="3" stroke-linecap="round" />
+      </svg>
+    </div>
+  </div> -->
+
+  <!-- Footer -->
+  <footer class="gradient-bg text-white py-6 px-6 mt-12">
+    <div class="container mx-auto text-center">
+      <p class="mb-2">© 2025 SpeakStory - Helping children improve pronunciation</p>
+      <div class="flex justify-center space-x-4">
+        <a href="#" class="hover:underline">Privacy Policy</a>
+        <a href="#" class="hover:underline">Terms of Use</a>
+        <a href="#" class="hover:underline">Contact Us</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Initialize animations on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Animate book cards on load
+      // gsap.from('.book-card', {
+      //   y: 50,
+      //   opacity: 0,
+      //   duration: 0.8,
+      //   stagger: 0.1,
+      //   ease: 'power2.out'
+      // });
+      
+      // File upload handling
+      const uploadZone = document.getElementById('uploadZone');
+      const fileInput = document.getElementById('fileInput');
+      
+      uploadZone.addEventListener('click', () => {
+        fileInput.click();
+      });
+      
+      // Drag and drop handling
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadZone.addEventListener(eventName, preventDefaults, false);
+      });
+      
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      
+      ['dragenter', 'dragover'].forEach(eventName => {
+        uploadZone.addEventListener(eventName, highlight, false);
+      });
+      
+      ['dragleave', 'drop'].forEach(eventName => {
+        uploadZone.addEventListener(eventName, unhighlight, false);
+      });
+      
+      function highlight() {
+        uploadZone.classList.add('bg-purple');
+        uploadZone.classList.add('bg-opacity-10');
+      }
+      
+      function unhighlight() {
+        uploadZone.classList.remove('bg-purple');
+        uploadZone.classList.remove('bg-opacity-10');
+      }
+    });
+  </script>
+</body>
+</html>
